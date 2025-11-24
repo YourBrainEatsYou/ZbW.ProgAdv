@@ -12,7 +12,35 @@ namespace OverridingEquals {
         public string SubscriberNumber { get; set; }
 
         // TODO: Implement Equals 
-        // TODO: Implement == and !=
-        // TODO: Implement GetHashCode
+        public override bool Equals(object? obj)
+        {
+            if (obj is not PhoneNumber other)
+            {
+                return false;
+            }
+
+            return AreaCode == other.AreaCode &&
+                   Exchange == other.Exchange &&
+                   SubscriberNumber == other.SubscriberNumber;
+        }
+
+        public static bool operator ==(PhoneNumber? left, PhoneNumber? right)
+        {
+            if (left is null || right is null)
+            {
+               return left is null && right is null;
+            }
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(PhoneNumber? left, PhoneNumber? right)
+        {
+            return !(left == right);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(AreaCode, Exchange, SubscriberNumber);
+        }
     }
 }
