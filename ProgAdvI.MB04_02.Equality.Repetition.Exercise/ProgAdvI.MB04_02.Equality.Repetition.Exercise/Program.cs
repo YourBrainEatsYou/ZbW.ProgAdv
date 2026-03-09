@@ -3,7 +3,7 @@
         public static void Main() {
             var vectors = new HashSet<Vector>();
 
-            var v1 = new Vector { X = 3, Y = 4 };
+            var v1 = new Vectorz { X = 3, Y = 4 };
             var v2 = new Vector { X = -1, Y = 2 };
 
             vectors.Add(v1);
