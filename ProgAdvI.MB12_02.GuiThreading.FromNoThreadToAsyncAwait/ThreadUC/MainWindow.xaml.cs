@@ -70,91 +70,21 @@ namespace ThreadUC
         // 2) Thread
         // ------------------------------------------------------------
         private void RunImport_Thread() {
-            List<string>? rawData = null;
-            string? result = null;
 
-            var loadThread = new Thread(() => {
-                this.Dispatcher.Invoke(() => {
-                    this.SetStatus("Lade Daten...");
-                    this.Log("Lade 5 Datensätze...");
-                });
-
-                rawData = this.LoadData_Blocking();
-            });
-
-            var processThread = new Thread(() => {
-                this.Dispatcher.Invoke(() => {
-                    this.SetStatus("Verarbeite Daten...");
-                    this.Log("Verarbeite Datensätze...");
-                });
-
-                result = this.ProcessData_Blocking(rawData!);
-            });
-
-            var orchestratorThread = new Thread(() => {
-                loadThread.Start();
-                loadThread.Join();
-
-                processThread.Start();
-                processThread.Join();
-
-                this.Dispatcher.Invoke(() => {
-                    this.SetStatus("Import abgeschlossen");
-                    this.Log($"Resultat: {result}");
-                    this.SetRunning(false);
-                });
-            });
-
-            orchestratorThread.IsBackground = true;
-            loadThread.IsBackground = true;
-            processThread.IsBackground = true;
-            orchestratorThread.Start();
         }
 
         // ------------------------------------------------------------
         // 3) Task + ContinueWith
         // ------------------------------------------------------------
         private void RunImport_TaskContinueWith() {
-            Task.Run(() => {
-                this.Dispatcher.Invoke(() => {
-                    this.SetStatus("Lade Daten...");
-                    this.Log("Lade 5 Datensätze...");
-                });
 
-                var rawData = this.LoadData_Blocking();
-
-                this.Dispatcher.Invoke(() => {
-                    this.SetStatus("Verarbeite Daten...");
-                    this.Log("Verarbeite Datensätze...");
-                });
-
-                var result = this.ProcessData_Blocking(rawData);
-                return result;
-            })
-            .ContinueWith(t => {
-                this.Dispatcher.Invoke(() => {
-                    this.SetStatus("Import abgeschlossen");
-                    this.Log($"Resultat: {t.Result}");
-                    this.SetRunning(false);
-                });
-            });
         }
 
         // ------------------------------------------------------------
         // 4) Task + async/await
         // ------------------------------------------------------------
         private async Task RunImport_AsyncAwait() {
-            this.SetStatus("Lade Daten...");
-            this.Log("Lade 5 Datensätze...");
-            var rawData = await this.LoadDataAsync();
 
-            this.SetStatus("Verarbeite Daten...");
-            this.Log("Verarbeite Datensätze...");
-            var result = await this.ProcessDataAsync(rawData);
-
-            this.SetStatus("Import abgeschlossen");
-            this.Log($"Resultat: {result}");
-            this.SetRunning(false);
         }
 
         #region BusinessLogic
