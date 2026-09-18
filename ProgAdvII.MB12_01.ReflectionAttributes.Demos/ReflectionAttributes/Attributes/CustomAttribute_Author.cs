@@ -46,7 +46,9 @@ namespace ReflectionAttributes.Attributes {
             // All Class Attributes
             object[] aiAll = type.GetCustomAttributes(true);
 
-            var a = (AuthorAttribute)aiAll[0];
+            var a = type.GetCustomAttributes(typeof(AuthorAttribute), true)
+                .Cast<AuthorAttribute>()
+                .First();
             Console.WriteLine(a.Version);
 
             // Check Definition

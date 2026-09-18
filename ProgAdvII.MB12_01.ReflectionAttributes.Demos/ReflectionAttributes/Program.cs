@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using ReflectionAttributes.Attributes;
@@ -11,22 +12,25 @@ namespace ReflectionAttributes {
 
             //Type sampleType = typeof(SampleClass);
 
-            var assembly = Assembly.LoadFile(@"C:\Users\tkehl\source\repos\ClassLibrary1\ClassLibrary1\bin\Debug\ClassLibrary1.dll");
-            var types = assembly.ExportedTypes.ToList();
+            const string demoAssemblyPath = @"C:\Users\tkehl\source\repos\ClassLibrary1\ClassLibrary1\bin\Debug\ClassLibrary1.dll";
+            if (File.Exists(demoAssemblyPath)) {
+                var assembly = Assembly.LoadFile(demoAssemblyPath);
+                var types = assembly.ExportedTypes.ToList();
 
-            //Type sampleType = Type.GetType("ReflectionAttributes.SampleClass");
-            Type sampleType = types[0];
+                //Type sampleType = Type.GetType("ReflectionAttributes.SampleClass");
+                Type sampleType = types[0];
 
-            //var o1 = new SampleClass();
-            var o1 = Activator.CreateInstance(sampleType);
+                //var o1 = new SampleClass();
+                var o1 = Activator.CreateInstance(sampleType);
 
-            var mi = sampleType.GetMethod("CacheItem", BindingFlags.Instance | BindingFlags.NonPublic);
-            mi.Invoke(o1, new object[] { "abc", "xyz" });
-
-
+                var mi = sampleType.GetMethod("CacheItem", BindingFlags.Instance | BindingFlags.NonPublic);
+                mi.Invoke(o1, new object[] { "abc", "xyz" });
 
 
-            var pi = sampleType.GetProperty("CachedItems", BindingFlags.Instance | BindingFlags.NonPublic);
+
+
+                var pi = sampleType.GetProperty("CachedItems", BindingFlags.Instance | BindingFlags.NonPublic);
+            }
 
             
 

@@ -8,8 +8,8 @@ namespace ReflectionAttributes.Emit {
         public static void Test() {           
             // Create Assembly
             AssemblyName assemblyName = new AssemblyName("Zbw.EmitDemoAssembly");
-            AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
-            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("Zbw.EmitDemoModule", "Zbw.EmitDemoAssembly.dll");
+            AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("Zbw.EmitDemoModule");
 
             // Define Type "public class EmitDemo"
             TypeBuilder typeBuilder = moduleBuilder.DefineType("ZbwEmitDemo", TypeAttributes.Public);
@@ -28,21 +28,15 @@ namespace ReflectionAttributes.Emit {
             ilGen.Emit(OpCodes.Ret);
 
             // Create Type
-            typeBuilder.CreateType();
+            Type emitDemoType = typeBuilder.CreateType();
 
             // Invoke Method
-            MethodInfo method = typeBuilder.GetMethod("SayHelloTo", new[] {typeof(string)});
-            object obj = Activator.CreateInstance(typeBuilder);
+            MethodInfo method = emitDemoType.GetMethod("SayHelloTo", new[] {typeof(string)});
+            object obj = Activator.CreateInstance(emitDemoType);
             object ret = method.Invoke(obj, new object[] {"ZBW"});
             Console.WriteLine(ret);
 
-            // Save the Assembly
-            assemblyBuilder.Save(assemblyName.Name + ".dll");
-
-
-
-            var assembly = Assembly.LoadFrom(assemblyName.Name + ".dll");
-            var type = assembly.ExportedTypes.Single(x => x.Name == "ZbwEmitDemo");
+            var type = emitDemoType;
             var method2 = type.GetMethod("SayHelloTo");
             object obj2 = Activator.CreateInstance(type);
             ret = method2.Invoke(obj2, new object[] {"ZBW"});
